@@ -1,6 +1,6 @@
-const twitterAPI = require("./twitterAPI.js");
-const classify = require("./classify.js");
-const spamScore = require("./spamScore.js");
+const twitterAPI = require("./scripts/twitterAPI");
+const classify = require("./scripts/classify.js");
+const spamScore = require("./scripts/spamScore.js");
 
 let TweetsData = [];
 

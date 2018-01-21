@@ -1,4 +1,4 @@
-const T = require("./twitterConfig.js");
+const T = require("../twitterConfig.js");
 
 let searchQuery = "@indiedev OR #gamedev -RT";
 let BlockedIDs = [];

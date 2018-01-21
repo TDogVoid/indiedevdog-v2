@@ -70,7 +70,7 @@ function initialTraining() {
 
   const rl = readline.createInterface({
     terminal: false,
-    input: fs.createReadStream("SMSSpamCollection.txt")
+    input: fs.createReadStream("./SMSSpamCollection.txt")
   });
 
   rl.on("line", function(line) {
@@ -104,7 +104,6 @@ function load() {
 
 function save() {
   classifier.train();
-  // ReclassifyAll();
   SaveClassifierFile();
 }
 

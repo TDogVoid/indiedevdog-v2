@@ -5,3 +5,4 @@ This is the intial commit so its still very buggy and code still needs cleaned u
 I also haven't written the cron bot part yet, still working on the training.
 
 The SMSSpamCollection.txt is from https://github.com/justmarkham/DAT5/blob/master/data/SMSSpamCollection.txt
+If you don't want to use this just create a empty file name SMSSpamCollection.txt
