@@ -1,0 +1,56 @@
+body {
+  font-family: sans-serif;
+  background-color: #315481;
+  background-image: linear-gradient(to bottom, #315481, #918e82 100%);
+  background-attachment: fixed;
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  padding: 0;
+  margin: 0;
+
+  font-size: 14px;
+}
+
+.tweet {
+  background: white;
+  border: grey solid 10px;
+}
+
+img {
+  height: auto;
+  width: auto;
+  max-width: 300px;
+  max-height: 300px;
+}
+
+.Ham {
+  background: #48c9b0;
+}
+
+.Spam {
+  background: #d98880;
+}
+
+.nextTweet {
+  border: orange solid 10px;
+}
+.center {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  width: 50%;
+}
+.AddTwitterAccountSpam input[type="text"] {
+  background-color: #d12e2e;
+  color: white;
+}
+
+.AddTwitterAccountHam input[type="text"] {
+  background-color: #0d4e00;
+  color: white;
+}

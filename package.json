@@ -1,0 +1,30 @@
+{
+  "name": "indiedevdogtrainer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "install": "./node_modules/.bin/electron-rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/TDog/indiedevdogtrainer.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitlab.com/TDog/indiedevdogtrainer/issues"
+  },
+  "homepage": "https://gitlab.com/TDog/indiedevdogtrainer#README",
+  "dependencies": {
+    "electron": "^1.7.10",
+    "jsonfile": "^4.0.0",
+    "natural": "^0.5.6",
+    "twit": "^2.2.9"
+  },
+  "devDependencies": {
+    "electron-rebuild": "^1.7.3"
+  }
+}
