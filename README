@@ -4,4 +4,4 @@ I'm adding some basic filtering of spam based on some spammy words.
 This is the intial commit so its still very buggy and code still needs cleaned up.
 I also haven't written the cron bot part yet, still working on the training.
 
-The SMSSpamCollection.txt is from [https://github.com/justmarkham/DAT5/blob/master/data/SMSSpamCollection.txt]
+The SMSSpamCollection.txt is from https://github.com/justmarkham/DAT5/blob/master/data/SMSSpamCollection.txt
