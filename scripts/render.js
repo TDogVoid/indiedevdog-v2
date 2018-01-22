@@ -1,8 +1,13 @@
 const twitterAPI = require("./scripts/twitterAPI");
 const classify = require("./scripts/classify.js");
 const spamScore = require("./scripts/spamScore.js");
+const TweetsFile = require("./scripts/tweets.js");
 
 let TweetsData = [];
+
+$(document).ready(function() {
+  Load();
+});
 
 function GetAccuracy() {
   console.log("Getting Accuracy");
@@ -21,14 +26,38 @@ function precisionRound(number, precision) {
   return Math.round(number * factor) / factor;
 }
 
+function Load() {
+  classify.load();
+  TweetsFile.load(function(err, data) {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    TweetsData = data;
+    RenderTweets();
+  });
+}
+
+function RenderTrainingMode() {}
+
+function RenderTweets() {
+  for (let i = 0; i < TweetsData.length; i++) {
+    renderTweet(TweetsData[i]);
+  }
+}
+
+function SaveTweets(Tweets) {
+  for (let i = 0; i < Tweets.length; i++) {
+    TweetsData.push(Tweets[i]);
+  }
+  TweetsFile.save(TweetsData);
+}
+
 function GetTweets() {
   //TODO: GET LastID
-  classify.load();
   twitterAPI.SearchTwitter(null, Tweets => {
-    TweetsData = Tweets;
-    for (let i = 0; i < Tweets.length; i++) {
-      renderTweet(Tweets[i]);
-    }
+    SaveTweets(Tweets);
+    RenderTweets();
   });
 }
 
@@ -36,6 +65,7 @@ function MarkSpam(tweet) {
   RemoveFromArray(TweetsData, tweet);
   classify.markSpam(tweet.full_text);
   reclassify();
+  TweetsFile.save(TweetsData);
 }
 
 function RemoveFromArray(arr, item) {
@@ -49,33 +79,12 @@ function MarkHam(tweet) {
   RemoveFromArray(TweetsData, tweet);
   classify.markHam(tweet.full_text);
   reclassify();
+  TweetsFile.save(TweetsData);
 }
 
-function renderTweet(tweet) {
-  let text = tweet.full_text;
-  //create divs
-  let div = document.createElement("div");
-  let divTweetText = document.createElement("div");
+function CreateProfileDiv(tweet) {
   let divProfileImage = document.createElement("div");
-  let divButtons = document.createElement("div");
-  let divSpamScore = document.createElement("div");
-
-  //classNames
-  c = classify.classify(text);
-  div.className = "tweet " + c;
-  divTweetText.className = "Tweet-text";
   divProfileImage.className = "ProfileImage";
-  divButtons.className = "buttons";
-
-  //append
-  div.appendChild(divProfileImage);
-  div.appendChild(divSpamScore);
-  div.appendChild(divTweetText);
-  div.appendChild(divButtons);
-
-  //set data;
-  let t = document.createTextNode(text);
-  divTweetText.appendChild(t);
 
   divProfileImage.innerHTML =
     '<a target="_blank" href="https://twitter.com/' +
@@ -87,12 +96,12 @@ function renderTweet(tweet) {
     tweet.user.name +
     "</h1>";
 
-  //set spam Score
-  if (tweet.user.spamScore != undefined) {
-    let SpamScoreText = "<h3>SpamScore: </h3>";
-    SpamScoreText += tweet.user.spamScore;
-    divSpamScore.innerHTML = SpamScoreText;
-  }
+  return divProfileImage;
+}
+
+function CreateDivButtons(tweet, divSpamScore) {
+  let divButtons = document.createElement("div");
+  divButtons.className = "buttons";
 
   //buttons
   let SpamButton = document.createElement("button");
@@ -119,7 +128,7 @@ function renderTweet(tweet) {
     spamScore.GetScore(tweet.user.id, function(err, Score) {
       let SpamScoreText = "<h3>SpamScore: </h3>";
       if (err) {
-        spamScoreText += "Error";
+        SpamScoreText += "Error";
       } else {
         SpamScoreText += Score;
       }
@@ -127,6 +136,39 @@ function renderTweet(tweet) {
       divSpamScore.innerHTML = SpamScoreText;
     });
   });
+
+  return divButtons;
+}
+
+function renderTweet(tweet) {
+  let text = tweet.full_text;
+  //create divs
+  let div = document.createElement("div");
+  let divTweetText = document.createElement("div");
+
+  let divSpamScore = document.createElement("div");
+
+  //classNames
+  c = classify.classify(text);
+  div.className = "tweet " + c;
+  divTweetText.className = "Tweet-text";
+
+  //append
+  div.appendChild(CreateProfileDiv(tweet));
+  div.appendChild(divSpamScore);
+  div.appendChild(divTweetText);
+  div.appendChild(CreateDivButtons(tweet, divSpamScore));
+
+  //set data;
+  let t = document.createTextNode(text);
+  divTweetText.appendChild(t);
+
+  //set spam Score
+  if (tweet.user.spamScore != undefined) {
+    let SpamScoreText = "<h3>SpamScore: </h3>";
+    SpamScoreText += tweet.user.spamScore;
+    divSpamScore.innerHTML = SpamScoreText;
+  }
 
   document.getElementById("tweets").appendChild(div);
 }

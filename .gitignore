@@ -51,3 +51,4 @@ twitterConfig.js
 classifier.json
 testData.json
 SMSSpamCollection.txt
+tweets.json
