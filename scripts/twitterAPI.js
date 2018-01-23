@@ -4,6 +4,7 @@ const searchQuery = '@indiedev OR #gamedev -RT';
 
 function SearchTwitter(lastID, callback) {
   const Tweets = [];
+  console.log(lastID);
   T.TwitClient.get(
     'search/tweets',
     {

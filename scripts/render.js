@@ -8,11 +8,25 @@ const TweetsFile = require('./scripts/tweets.js'); // eslint-disable-line import
 
 let TweetsData = [];
 
-function RemoveFromArray(arr, item) {
+function removeFromArray(arr, item) {
   const i = arr.indexOf(item);
   if (i !== -1) {
     arr.splice(i, 1);
   }
+}
+
+function getLastID() {
+  // TOOD: need to save lastid to a pref file so when tweets is empty it still gets only new ones
+  if (TweetsData.length > 0) {
+    let last = 0;
+    for (let i = 0; i < TweetsData.length; i += 1) {
+      if (TweetsData[i].id > last) {
+        last = TweetsData[i].id;
+      }
+    }
+    return last;
+  }
+  return null;
 }
 
 function precisionRound(number, precision) {
@@ -25,6 +39,7 @@ function GetAccuracy() {
   classify.GetAccuracy((err, score) => {
     if (err) {
       console.log(err);
+      return;
     }
     const precScore = precisionRound(score, 2) * 100;
     document.getElementById(
@@ -33,28 +48,29 @@ function GetAccuracy() {
   });
 }
 
-function SaveTweets(Tweets) {
+function saveTweets(Tweets) {
   for (let i = 0; i < Tweets.length; i += 1) {
     TweetsData.push(Tweets[i]);
   }
+
   TweetsFile.save(TweetsData);
 }
 
 function MarkSpam(tweet) {
-  RemoveFromArray(TweetsData, tweet);
+  removeFromArray(TweetsData, tweet);
   classify.markSpam(tweet.full_text);
   reclassify(); // eslint-disable-line no-use-before-define
   TweetsFile.save(TweetsData);
 }
 
 function MarkHam(tweet) {
-  RemoveFromArray(TweetsData, tweet);
+  removeFromArray(TweetsData, tweet);
   classify.markHam(tweet.full_text);
   reclassify(); // eslint-disable-line no-use-before-define
   TweetsFile.save(TweetsData);
 }
 
-function CreateProfileDiv(tweet) {
+function createProfileDiv(tweet) {
   const divProfileImage = document.createElement('div');
   divProfileImage.className = 'ProfileImage';
 
@@ -67,7 +83,7 @@ function CreateProfileDiv(tweet) {
   return divProfileImage;
 }
 
-function CreateDivButtons(tweet, divSpamScore) {
+function createDivButtons(tweet, divSpamScore) {
   const divButtons = document.createElement('div');
   divButtons.className = 'buttons';
 
@@ -115,16 +131,18 @@ function renderTweet(tweet) {
   const divTweetText = document.createElement('div');
 
   const divSpamScore = document.createElement('div');
+  const divMedia = document.createElement('div');
 
   // classNames
   div.className = `tweet ${classify.classify(text)}`;
   divTweetText.className = 'Tweet-text';
 
   // append
-  div.appendChild(CreateProfileDiv(tweet));
+  div.appendChild(createProfileDiv(tweet));
   div.appendChild(divSpamScore);
   div.appendChild(divTweetText);
-  div.appendChild(CreateDivButtons(tweet, divSpamScore));
+  div.appendChild(divMedia);
+  div.appendChild(createDivButtons(tweet, divSpamScore));
 
   // set data;
   const t = document.createTextNode(text);
@@ -137,6 +155,14 @@ function renderTweet(tweet) {
     divSpamScore.innerHTML = SpamScoreText;
   }
 
+  if (tweet.entities.media) {
+    console.log(tweet.entities.media);
+
+    divMedia.innerHTML = `<img src="${
+      tweet.entities.media[0].media_url_https
+    }" >`;
+  }
+
   document.getElementById('tweets').appendChild(div);
 }
 
@@ -147,13 +173,13 @@ function reclassify() {
   });
 }
 
-function RenderTweets() {
+function renderTweets() {
   for (let i = 0; i < TweetsData.length; i += 1) {
     renderTweet(TweetsData[i]);
   }
 }
 
-function Load() {
+function load() {
   classify.load(() => {
     TweetsFile.load((err, data) => {
       if (err) {
@@ -161,20 +187,19 @@ function Load() {
         return;
       }
       TweetsData = data;
-      RenderTweets();
+      renderTweets();
     });
   });
 }
 
 // eslint-disable-next-line no-unused-vars
 function GetTweets() {
-  // TODO: GET LastID
-  twitterAPI.SearchTwitter(null, (Tweets) => {
-    SaveTweets(Tweets);
-    RenderTweets();
+  twitterAPI.SearchTwitter(getLastID(), (Tweets) => {
+    saveTweets(Tweets);
+    renderTweets();
   });
 }
 
 $(document).ready(() => {
-  Load();
+  load();
 });
