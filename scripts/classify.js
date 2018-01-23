@@ -1,35 +1,58 @@
-const natural = require("natural");
-var classifier;
-const testData = require("./testData.js");
+/* eslint no-unused-vars: ["error", { "args": "none" }] */
+const natural = require('natural');
+const testData = require('./testData.js');
+const readline = require('readline');
+const fs = require('fs');
 
-const ClassSpam = "Spam";
-const ClassHam = "Ham";
+let classifier;
+
+const ClassSpam = 'Spam';
+const ClassHam = 'Ham';
+
+function classify(str) {
+  return classifier.classify(str);
+}
+
+function train(str, type) {
+  classifier.addDocument(str, type);
+}
+
+function SaveClassifierFile() {
+  classifier.save('./classifier.json', (err, c) => {
+    // the classifier is saved to the classifier.json file!
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log('Saved classifier');
+  });
+}
+
+function save() {
+  classifier.train();
+  SaveClassifierFile();
+}
 
 function GetAccuracy(callback) {
-  testData.load(function(err, data) {
+  testData.load((err, data) => {
     let right = 0;
     if (err) {
       callback(err, null);
       return;
     }
-    for (let i = 0; i < data.length; i++) {
-      const text = data[i].text;
-      const type = data[i].type;
-      const c = classify(text);
-      if (type == c) {
-        right++;
+    for (let i = 0; i < data.length; i += 1) {
+      if (data[i].type === classify(data[i].text)) {
+        right += 1;
       }
     }
-    score = right / data.length;
-    callback(err, score);
+    callback(err, right / data.length);
   });
 }
 
 function isTestData() {
-  //take about a third of the data to test data
-  let i = Math.floor(Math.random() * 3);
-  console.log(i);
-  if (i == 1) {
+  // take about a third of the data to test data
+  const i = Math.floor(Math.random() * 3);
+  if (i === 1) {
     return true;
   }
   return false;
@@ -37,7 +60,7 @@ function isTestData() {
 
 function markSpam(str) {
   if (isTestData()) {
-    let obj = { text: str, type: ClassSpam };
+    const obj = { text: str, type: ClassSpam };
     testData.save(obj);
     return;
   }
@@ -47,7 +70,7 @@ function markSpam(str) {
 
 function markHam(str) {
   if (isTestData()) {
-    let obj = { text: str, type: ClassHam };
+    const obj = { text: str, type: ClassHam };
     testData.save(obj);
     return;
   }
@@ -55,26 +78,21 @@ function markHam(str) {
   save();
 }
 
-function train(str, type) {
-  classifier.addDocument(str, type);
-}
-
 function initialTraining() {
-  console.log("Initial Training");
-  const readline = require("readline");
-  const fs = require("fs");
+  console.log('Initial Training');
 
-  let pattSpam = /^spam\b/;
-  let pattHam = /^ham\b/;
-  let subst = "";
+  const pattSpam = /^spam\b/;
+  const pattHam = /^ham\b/;
+  const subst = '';
 
   const rl = readline.createInterface({
     terminal: false,
-    input: fs.createReadStream("./SMSSpamCollection.txt")
+    input: fs.createReadStream('./SMSSpamCollection.txt'),
   });
 
-  rl.on("line", function(line) {
-    let cl = "";
+  rl.on('line', (line) => {
+    let cl = '';
+    let str = '';
 
     if (pattSpam.test(line)) {
       str = line.replace(pattSpam, subst);
@@ -85,41 +103,23 @@ function initialTraining() {
     }
     train(str, cl);
   });
-  rl.on("close", function() {
-    console.log("InitTraining Done");
+  rl.on('close', () => {
+    console.log('InitTraining Done');
     save();
   });
 }
 
-function load() {
-  natural.BayesClassifier.load("classifier.json", null, function(err, c) {
-    if (err && err.code === "ENOENT") {
+function load(callback) {
+  natural.BayesClassifier.load('classifier.json', null, (err, c) => {
+    if (err && err.code === 'ENOENT') {
       classifier = new natural.BayesClassifier();
       initialTraining();
+      callback();
       return;
     }
     classifier = c;
+    callback();
   });
-}
-
-function save() {
-  classifier.train();
-  SaveClassifierFile();
-}
-
-function SaveClassifierFile() {
-  classifier.save("./classifier.json", function(err, c) {
-    // the classifier is saved to the classifier.json file!
-    if (err) {
-      console.log(err);
-      return;
-    }
-    console.log("Saved classifier");
-  });
-}
-
-function classify(str) {
-  return classifier.classify(str);
 }
 
 module.exports.load = load;

@@ -1,5 +1,6 @@
-const jsonfile = require("jsonfile");
-const file = "tweets.json";
+const jsonfile = require('jsonfile');
+
+const file = 'tweets.json';
 
 function load(callback) {
   jsonfile.readFile(file, callback);

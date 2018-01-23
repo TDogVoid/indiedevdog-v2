@@ -1,139 +1,107 @@
-const twitterAPI = require("./scripts/twitterAPI");
-const classify = require("./scripts/classify.js");
-const spamScore = require("./scripts/spamScore.js");
-const TweetsFile = require("./scripts/tweets.js");
+/* global $ document */
+/* eslint no-undef: "error" */
+
+const twitterAPI = require('./scripts/twitterAPI'); // eslint-disable-line import/no-unresolved
+const classify = require('./scripts/classify.js'); // eslint-disable-line import/no-unresolved
+const spamScore = require('./scripts/spamScore.js'); // eslint-disable-line import/no-unresolved
+const TweetsFile = require('./scripts/tweets.js'); // eslint-disable-line import/no-unresolved
 
 let TweetsData = [];
 
-$(document).ready(function() {
-  Load();
-});
-
-function GetAccuracy() {
-  console.log("Getting Accuracy");
-  classify.GetAccuracy(function(err, score) {
-    if (err) {
-      console.log(err);
-    }
-    console.log(score);
-    document.getElementById("Accuracy").innerHTML =
-      "Accuracy Score: " + precisionRound(score, 2) * 100 + "%";
-  });
-}
-
-function precisionRound(number, precision) {
-  var factor = Math.pow(10, precision);
-  return Math.round(number * factor) / factor;
-}
-
-function Load() {
-  classify.load();
-  TweetsFile.load(function(err, data) {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    TweetsData = data;
-    RenderTweets();
-  });
-}
-
-function RenderTrainingMode() {}
-
-function RenderTweets() {
-  for (let i = 0; i < TweetsData.length; i++) {
-    renderTweet(TweetsData[i]);
+function RemoveFromArray(arr, item) {
+  const i = arr.indexOf(item);
+  if (i !== -1) {
+    arr.splice(i, 1);
   }
 }
 
+function precisionRound(number, precision) {
+  const factor = 10 ** precision;
+  return Math.round(number * factor) / factor;
+}
+
+// eslint-disable-next-line no-unused-vars
+function GetAccuracy() {
+  classify.GetAccuracy((err, score) => {
+    if (err) {
+      console.log(err);
+    }
+    const precScore = precisionRound(score, 2) * 100;
+    document.getElementById(
+      'Accuracy'
+    ).innerHTML = `Accuracy Score: ${precScore}%`;
+  });
+}
+
 function SaveTweets(Tweets) {
-  for (let i = 0; i < Tweets.length; i++) {
+  for (let i = 0; i < Tweets.length; i += 1) {
     TweetsData.push(Tweets[i]);
   }
   TweetsFile.save(TweetsData);
 }
 
-function GetTweets() {
-  //TODO: GET LastID
-  twitterAPI.SearchTwitter(null, Tweets => {
-    SaveTweets(Tweets);
-    RenderTweets();
-  });
-}
-
 function MarkSpam(tweet) {
   RemoveFromArray(TweetsData, tweet);
   classify.markSpam(tweet.full_text);
-  reclassify();
+  reclassify(); // eslint-disable-line no-use-before-define
   TweetsFile.save(TweetsData);
-}
-
-function RemoveFromArray(arr, item) {
-  var i = arr.indexOf(item);
-  if (i != -1) {
-    arr.splice(i, 1);
-  }
 }
 
 function MarkHam(tweet) {
   RemoveFromArray(TweetsData, tweet);
   classify.markHam(tweet.full_text);
-  reclassify();
+  reclassify(); // eslint-disable-line no-use-before-define
   TweetsFile.save(TweetsData);
 }
 
 function CreateProfileDiv(tweet) {
-  let divProfileImage = document.createElement("div");
-  divProfileImage.className = "ProfileImage";
+  const divProfileImage = document.createElement('div');
+  divProfileImage.className = 'ProfileImage';
 
-  divProfileImage.innerHTML =
-    '<a target="_blank" href="https://twitter.com/' +
-    tweet.user.screen_name +
-    '"><img src=' +
-    tweet.user.profile_image_url +
-    " /></a>" +
-    "<h1>" +
-    tweet.user.name +
-    "</h1>";
+  divProfileImage.innerHTML = `<a target="_blank" href="https://twitter.com/${
+    tweet.user.screen_name
+  }"><img src="${tweet.user.profile_image_url}"/></a><h1>${
+    tweet.user.name
+  }</h1>`;
 
   return divProfileImage;
 }
 
 function CreateDivButtons(tweet, divSpamScore) {
-  let divButtons = document.createElement("div");
-  divButtons.className = "buttons";
+  const divButtons = document.createElement('div');
+  divButtons.className = 'buttons';
 
-  //buttons
-  let SpamButton = document.createElement("button");
-  let HamButton = document.createElement("button");
-  let ScoreButton = document.createElement("button");
+  // buttons
+  const SpamButton = document.createElement('button');
+  const HamButton = document.createElement('button');
+  const ScoreButton = document.createElement('button');
   divButtons.appendChild(SpamButton);
   divButtons.appendChild(HamButton);
   divButtons.appendChild(ScoreButton);
-  ScoreButton.innerText = "Get Spam Score";
-  SpamButton.innerText = "Mark Spam";
-  HamButton.innerText = "Mark Ham";
-  SpamButton.className = "Spam";
-  HamButton.className = "Ham";
+  ScoreButton.innerText = 'Get Spam Score';
+  SpamButton.innerText = 'Mark Spam';
+  HamButton.innerText = 'Mark Ham';
+  SpamButton.className = 'Spam';
+  HamButton.className = 'Ham';
 
-  SpamButton.addEventListener("click", function() {
+  SpamButton.addEventListener('click', () => {
     MarkSpam(tweet);
   });
 
-  HamButton.addEventListener("click", function() {
+  HamButton.addEventListener('click', () => {
     MarkHam(tweet);
   });
 
-  ScoreButton.addEventListener("click", function() {
-    spamScore.GetScore(tweet.user.id, function(err, Score) {
-      let SpamScoreText = "<h3>SpamScore: </h3>";
+  ScoreButton.addEventListener('click', () => {
+    spamScore.GetScore(tweet.user.id, (err, Score) => {
+      let SpamScoreText = '<h3>SpamScore: </h3>';
       if (err) {
-        SpamScoreText += "Error";
+        SpamScoreText += 'Error';
       } else {
         SpamScoreText += Score;
       }
-      tweet.user.spamScore = Score;
-      divSpamScore.innerHTML = SpamScoreText;
+      tweet.user.spamScore = Score; // eslint-disable-line no-param-reassign
+      divSpamScore.innerHTML = SpamScoreText; // eslint-disable-line no-param-reassign
     });
   });
 
@@ -141,41 +109,72 @@ function CreateDivButtons(tweet, divSpamScore) {
 }
 
 function renderTweet(tweet) {
-  let text = tweet.full_text;
-  //create divs
-  let div = document.createElement("div");
-  let divTweetText = document.createElement("div");
+  const text = tweet.full_text;
+  // create divs
+  const div = document.createElement('div');
+  const divTweetText = document.createElement('div');
 
-  let divSpamScore = document.createElement("div");
+  const divSpamScore = document.createElement('div');
 
-  //classNames
-  c = classify.classify(text);
-  div.className = "tweet " + c;
-  divTweetText.className = "Tweet-text";
+  // classNames
+  div.className = `tweet ${classify.classify(text)}`;
+  divTweetText.className = 'Tweet-text';
 
-  //append
+  // append
   div.appendChild(CreateProfileDiv(tweet));
   div.appendChild(divSpamScore);
   div.appendChild(divTweetText);
   div.appendChild(CreateDivButtons(tweet, divSpamScore));
 
-  //set data;
-  let t = document.createTextNode(text);
+  // set data;
+  const t = document.createTextNode(text);
   divTweetText.appendChild(t);
 
-  //set spam Score
-  if (tweet.user.spamScore != undefined) {
-    let SpamScoreText = "<h3>SpamScore: </h3>";
+  // set spam Score
+  if (tweet.user.spamScore !== undefined) {
+    let SpamScoreText = '<h3>SpamScore: </h3>';
     SpamScoreText += tweet.user.spamScore;
     divSpamScore.innerHTML = SpamScoreText;
   }
 
-  document.getElementById("tweets").appendChild(div);
+  document.getElementById('tweets').appendChild(div);
 }
 
 function reclassify() {
-  document.getElementById("tweets").innerHTML = "";
-  TweetsData.forEach(tweet => {
+  document.getElementById('tweets').innerHTML = '';
+  TweetsData.forEach((tweet) => {
     renderTweet(tweet);
   });
 }
+
+function RenderTweets() {
+  for (let i = 0; i < TweetsData.length; i += 1) {
+    renderTweet(TweetsData[i]);
+  }
+}
+
+function Load() {
+  classify.load(() => {
+    TweetsFile.load((err, data) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      TweetsData = data;
+      RenderTweets();
+    });
+  });
+}
+
+// eslint-disable-next-line no-unused-vars
+function GetTweets() {
+  // TODO: GET LastID
+  twitterAPI.SearchTwitter(null, (Tweets) => {
+    SaveTweets(Tweets);
+    RenderTweets();
+  });
+}
+
+$(document).ready(() => {
+  Load();
+});
