@@ -124,37 +124,8 @@ function createDivButtons(tweet, divSpamScore) {
   return divButtons;
 }
 
-function renderTweet(tweet) {
-  const text = tweet.full_text;
-  // create divs
-  const div = document.createElement('div');
-  const divTweetText = document.createElement('div');
-
-  const divSpamScore = document.createElement('div');
+function createMediaImage(tweet) {
   const divMedia = document.createElement('div');
-
-  // classNames
-  div.className = `tweet ${classify.classify(text)}`;
-  divTweetText.className = 'Tweet-text';
-
-  // append
-  div.appendChild(createProfileDiv(tweet));
-  div.appendChild(divSpamScore);
-  div.appendChild(divTweetText);
-  div.appendChild(divMedia);
-  div.appendChild(createDivButtons(tweet, divSpamScore));
-
-  // set data;
-  const t = document.createTextNode(text);
-  divTweetText.appendChild(t);
-
-  // set spam Score
-  if (tweet.user.spamScore !== undefined) {
-    let SpamScoreText = '<h3>SpamScore: </h3>';
-    SpamScoreText += tweet.user.spamScore;
-    divSpamScore.innerHTML = SpamScoreText;
-  }
-
   if (tweet.entities.media) {
     console.log(tweet.entities.media);
 
@@ -162,6 +133,44 @@ function renderTweet(tweet) {
       tweet.entities.media[0].media_url_https
     }" >`;
   }
+  return divMedia;
+}
+
+function createTweetText(text) {
+  const divTweetText = document.createElement('div');
+  divTweetText.className = 'Tweet-text';
+  const t = document.createTextNode(text);
+  divTweetText.appendChild(t);
+  return divTweetText;
+}
+
+function setSpamScore(divSpamScore, tweet) {
+  if (tweet.user.spamScore !== undefined) {
+    let SpamScoreText = '<h3>SpamScore: </h3>';
+    SpamScoreText += tweet.user.spamScore;
+    divSpamScore.innerHTML = SpamScoreText; // eslint-disable-line no-param-reassign
+  }
+}
+
+function renderTweet(tweet) {
+  const text = tweet.full_text;
+
+  // create divs
+  const div = document.createElement('div');
+  const divSpamScore = document.createElement('div');
+
+  // classNames
+  div.className = `tweet ${classify.classify(text)}`;
+
+  // append
+  div.appendChild(createProfileDiv(tweet));
+  div.appendChild(divSpamScore);
+  div.appendChild(createTweetText(text));
+  div.appendChild(createMediaImage(tweet));
+  div.appendChild(createDivButtons(tweet, divSpamScore));
+
+  // set spam Score
+  setSpamScore(divSpamScore, tweet);
 
   document.getElementById('tweets').appendChild(div);
 }
