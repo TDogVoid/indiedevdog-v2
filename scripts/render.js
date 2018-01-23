@@ -127,8 +127,6 @@ function createDivButtons(tweet, divSpamScore) {
 function createMediaImage(tweet) {
   const divMedia = document.createElement('div');
   if (tweet.entities.media) {
-    console.log(tweet.entities.media);
-
     divMedia.innerHTML = `<img src="${
       tweet.entities.media[0].media_url_https
     }" >`;
