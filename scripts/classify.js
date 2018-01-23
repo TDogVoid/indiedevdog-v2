@@ -22,9 +22,7 @@ function SaveClassifierFile() {
     // the classifier is saved to the classifier.json file!
     if (err) {
       console.log(err);
-      return;
     }
-    console.log('Saved classifier');
   });
 }
 

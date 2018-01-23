@@ -91,8 +91,8 @@ function createDivButtons(tweet, divSpamScore) {
   const SpamButton = document.createElement('button');
   const HamButton = document.createElement('button');
   const ScoreButton = document.createElement('button');
-  divButtons.appendChild(SpamButton);
   divButtons.appendChild(HamButton);
+  divButtons.appendChild(SpamButton);
   divButtons.appendChild(ScoreButton);
   ScoreButton.innerText = 'Get Spam Score';
   SpamButton.innerText = 'Mark Spam';
@@ -127,9 +127,9 @@ function createDivButtons(tweet, divSpamScore) {
 function createMediaImage(tweet) {
   const divMedia = document.createElement('div');
   if (tweet.entities.media) {
-    divMedia.innerHTML = `<img src="${
+    divMedia.innerHTML = `<a target="_blank" href="${
       tweet.entities.media[0].media_url_https
-    }" >`;
+    }"><img src="${tweet.entities.media[0].media_url_https}" ></a>`;
   }
   return divMedia;
 }
@@ -150,7 +150,7 @@ function setSpamScore(divSpamScore, tweet) {
   }
 }
 
-function renderTweet(tweet) {
+function renderTweet(tweet, DivID) {
   const text = tweet.full_text;
 
   // create divs
@@ -170,20 +170,24 @@ function renderTweet(tweet) {
   // set spam Score
   setSpamScore(divSpamScore, tweet);
 
-  document.getElementById('tweets').appendChild(div);
-}
-
-function reclassify() {
-  document.getElementById('tweets').innerHTML = '';
-  TweetsData.forEach((tweet) => {
-    renderTweet(tweet);
-  });
+  document.getElementById(DivID).appendChild(div);
 }
 
 function renderTweets() {
   for (let i = 0; i < TweetsData.length; i += 1) {
-    renderTweet(TweetsData[i]);
+    renderTweet(TweetsData[i], 'tweets');
   }
+}
+
+function renderTrainingMode() {
+  document.getElementById('Training').innerHTML = '';
+  renderTweet(TweetsData[0], 'Training');
+}
+
+function reclassify() {
+  document.getElementById('tweets').innerHTML = '';
+  renderTweets();
+  renderTrainingMode();
 }
 
 function load() {
@@ -195,6 +199,7 @@ function load() {
       }
       TweetsData = data;
       renderTweets();
+      renderTrainingMode();
     });
   });
 }
@@ -209,4 +214,12 @@ function GetTweets() {
 
 $(document).ready(() => {
   load();
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.keyCode === 72) {
+    MarkHam(TweetsData[0]);
+  } else if (event.keyCode === 83) {
+    MarkSpam(TweetsData[0]);
+  }
 });
