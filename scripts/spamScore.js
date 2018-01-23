@@ -5,7 +5,16 @@
 
 const twitterAPI = require('./twitterAPI.js');
 
-const spamWords = ['udemy', 'course', 'save', 'coupon', 'free', 'discount'];
+const spamWords = [
+  'udemy',
+  'course',
+  'save',
+  'coupon',
+  'free',
+  'discount',
+  'courses',
+  'learn',
+];
 
 function matchWords(subject, words) {
   // snippet from https://www.safaribooksonline.com/library/view/regular-expressions-cookbook/9781449327453/ch05s02.html
@@ -35,11 +44,11 @@ function precisionRound(number, precision) {
 }
 
 function GetScore(userID, callback) {
-  console.log('Getting Spam Score');
   let spamCount = 0;
   twitterAPI.GetUserTweets(userID, (err, tweets) => {
     if (err) {
       callback(err, null);
+      return;
     }
     for (let i = 0; i < tweets.length; i += 1) {
       const text = tweets[i].full_text;
@@ -48,7 +57,6 @@ function GetScore(userID, callback) {
       }
     }
     const score = precisionRound(spamCount / tweets.length, 2);
-    console.log(`Score: ${spamCount / tweets.length}`);
     callback(err, score);
   });
 }

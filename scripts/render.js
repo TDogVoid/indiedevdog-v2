@@ -113,6 +113,7 @@ function createDivButtons(tweet, divSpamScore) {
       let SpamScoreText = '<h3>SpamScore: </h3>';
       if (err) {
         SpamScoreText += 'Error';
+        console.log(err);
       } else {
         SpamScoreText += Score;
       }
@@ -174,6 +175,7 @@ function renderTweet(tweet, DivID) {
 }
 
 function renderTweets() {
+  GetAccuracy();
   for (let i = 0; i < TweetsData.length; i += 1) {
     renderTweet(TweetsData[i], 'tweets');
   }
@@ -209,6 +211,7 @@ function GetTweets() {
   twitterAPI.SearchTwitter(getLastID(), (Tweets) => {
     saveTweets(Tweets);
     renderTweets();
+    renderTrainingMode();
   });
 }
 
