@@ -5,6 +5,7 @@ const twitterAPI = require('./scripts/twitterAPI'); // eslint-disable-line impor
 const classify = require('./scripts/classify.js'); // eslint-disable-line import/no-unresolved
 const spamScore = require('./scripts/spamScore.js'); // eslint-disable-line import/no-unresolved
 const TweetsFile = require('./scripts/tweets.js'); // eslint-disable-line import/no-unresolved
+const UserData = require('./scripts/userData.js'); // eslint-disable-line import/no-unresolved
 
 let TweetsData = [];
 
@@ -17,13 +18,14 @@ function removeFromArray(arr, item) {
 
 function getLastID() {
   // TOOD: need to save lastid to a pref file so when tweets is empty it still gets only new ones
+  let last = UserData.getLastID();
   if (TweetsData.length > 0) {
-    let last = 0;
     for (let i = 0; i < TweetsData.length; i += 1) {
       if (TweetsData[i].id > last) {
         last = TweetsData[i].id;
       }
     }
+    UserData.setLastID(last);
     return last;
   }
   return null;
@@ -212,11 +214,16 @@ function GetTweets() {
     saveTweets(Tweets);
     renderTweets();
     renderTrainingMode();
+
+    // set new LastID
+    getLastID();
   });
 }
 
 $(document).ready(() => {
-  load();
+  UserData.load(() => {
+    load();
+  });
 });
 
 document.addEventListener('keydown', (event) => {
