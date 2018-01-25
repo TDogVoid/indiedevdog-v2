@@ -17,7 +17,7 @@ function removeFromArray(arr, item) {
 }
 
 function getLastID() {
-  // TOOD: need to save lastid to a pref file so when tweets is empty it still gets only new ones
+  // TODO: need to save lastid to a pref file so when tweets is empty it still gets only new ones
   let last = UserData.getLastID();
   if (TweetsData.length > 0) {
     for (let i = 0; i < TweetsData.length; i += 1) {
