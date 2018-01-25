@@ -30,12 +30,12 @@ function SearchTwitter(lastID, callback) {
   );
 }
 
-function GetUserTweets(id, callback) {
+function GetUserTweets(screenName, callback) {
   const Tweets = [];
   T.TwitClient.get(
     'statuses/user_timeline',
     {
-      user_id: id,
+      screen_name: screenName,
       count: 100,
       include_rts: false,
       exclude_replies: true,

@@ -111,7 +111,7 @@ function createDivButtons(tweet, divSpamScore) {
   });
 
   ScoreButton.addEventListener('click', () => {
-    spamScore.GetScore(tweet.user.id, (err, Score) => {
+    spamScore.GetScore(tweet.user.screen_name, (err, Score) => {
       let SpamScoreText = '<h3>SpamScore: </h3>';
       if (err) {
         SpamScoreText += 'Error';

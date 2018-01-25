@@ -43,9 +43,9 @@ function precisionRound(number, precision) {
   return Math.round(number * factor) / factor;
 }
 
-function GetScore(userID, callback) {
+function GetScore(screenName, callback) {
   let spamCount = 0;
-  twitterAPI.GetUserTweets(userID, (err, tweets) => {
+  twitterAPI.GetUserTweets(screenName, (err, tweets) => {
     if (err) {
       callback(err, null);
       return;
