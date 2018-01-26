@@ -129,11 +129,28 @@ function createDivButtons(tweet, divSpamScore) {
 
 function createMediaImage(tweet) {
   const divMedia = document.createElement('div');
-  if (tweet.entities.media) {
-    divMedia.innerHTML = `<a target="_blank" href="${
-      tweet.entities.media[0].media_url_https
-    }"><img src="${tweet.entities.media[0].media_url_https}" ></a>`;
+  const entities = tweet.extended_entities;
+  if (!entities) {
+    return divMedia;
   }
+  if (entities.media[0].type === 'photo') {
+    divMedia.innerHTML = `<a target="_blank" href="${
+      entities.media[0].media_url_https
+    }"><img src="${entities.media[0].media_url_https}" alt="${
+      tweet.user.screen_name
+    } Image" ></a>`;
+  } else if (
+    entities.media[0].type === 'animated_gif' ||
+    entities.media[0].type === 'video'
+  ) {
+    divMedia.innerHTML = `<video width="320" height="240" controls>
+    <source src="${entities.media[0].video_info.variants[0].url}" type="${
+      entities.media[0].video_info.variants[0].content_type
+    }">
+  Your browser does not support the video tag.
+  </video>`;
+  }
+
   return divMedia;
 }
 
