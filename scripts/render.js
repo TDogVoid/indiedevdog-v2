@@ -114,15 +114,13 @@ function createDivButtons(tweet, divSpamScore) {
 
   ScoreButton.addEventListener('click', () => {
     spamScore.GetScore(tweet.user.screen_name, (err, Score) => {
-      let SpamScoreText = '<h3>SpamScore: </h3>';
       if (err) {
-        SpamScoreText += 'Error';
         console.log(err);
-      } else {
-        SpamScoreText += Score;
+        return;
       }
       tweet.user.spamScore = Score; // eslint-disable-line no-param-reassign
-      divSpamScore.innerHTML = SpamScoreText; // eslint-disable-line no-param-reassign
+      renderSpamScore(divSpamScore, tweet); // eslint-disable-line no-use-before-define
+      TweetsFile.save(TweetsData);
     });
   });
 
@@ -164,11 +162,11 @@ function createTweetText(text) {
   return divTweetText;
 }
 
-function setSpamScore(divSpamScore, tweet) {
+function renderSpamScore(divSpamScore, tweet) {
   if (tweet.user.spamScore !== undefined) {
-    let SpamScoreText = '<h3>SpamScore: </h3>';
+    let SpamScoreText = 'SpamScore: ';
     SpamScoreText += tweet.user.spamScore;
-    divSpamScore.innerHTML = SpamScoreText; // eslint-disable-line no-param-reassign
+    divSpamScore.innerHTML = `<div class="col s12"><h5>${SpamScoreText}</h5></div>`; // eslint-disable-line no-param-reassign
   }
 }
 
@@ -190,7 +188,7 @@ function renderTweet(tweet, DivID) {
   div.appendChild(createDivButtons(tweet, divSpamScore));
 
   // set spam Score
-  setSpamScore(divSpamScore, tweet);
+  renderSpamScore(divSpamScore, tweet);
 
   document.getElementById(DivID).appendChild(div);
 }
