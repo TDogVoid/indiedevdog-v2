@@ -46,7 +46,7 @@ function GetAccuracy() {
     const precScore = precisionRound(score, 2) * 100;
     document.getElementById(
       'Accuracy'
-    ).innerHTML = `Accuracy Score: ${precScore}%`;
+    ).innerHTML = `<div class="col s5 teal lighten-2">Accuracy Score: ${precScore}%</div>`;
   });
 }
 
@@ -76,11 +76,13 @@ function createProfileDiv(tweet) {
   const divProfileImage = document.createElement('div');
   divProfileImage.className = 'ProfileImage';
 
-  divProfileImage.innerHTML = `<a target="_blank" href="https://twitter.com/${
+  divProfileImage.innerHTML = `<div class="col s2"><a target="_blank" href="https://twitter.com/${
     tweet.user.screen_name
-  }"><img src="${tweet.user.profile_image_url}"/></a><h1>${
+  }"><img src="${
+    tweet.user.profile_image_url
+  }" class="circle responsive-img" alt="" /></a></div><div class="col s10"><h4>${
     tweet.user.name
-  }</h1>`;
+  }</h4></div>`;
 
   return divProfileImage;
 }
@@ -134,21 +136,21 @@ function createMediaImage(tweet) {
     return divMedia;
   }
   if (entities.media[0].type === 'photo') {
-    divMedia.innerHTML = `<a target="_blank" href="${
+    divMedia.innerHTML = `<div class="col s12"><a target="_blank" href="${
       entities.media[0].media_url_https
-    }"><img src="${entities.media[0].media_url_https}" alt="${
-      tweet.user.screen_name
-    } Image" ></a>`;
+    }"><img class="responsive-img" src="${
+      entities.media[0].media_url_https
+    }" alt="${tweet.user.screen_name} Missing Image" ></a></div>`;
   } else if (
     entities.media[0].type === 'animated_gif' ||
     entities.media[0].type === 'video'
   ) {
-    divMedia.innerHTML = `<video width="320" height="240" controls>
+    divMedia.innerHTML = `<div class="col s12"><video class="responsive-video" controls>
     <source src="${entities.media[0].video_info.variants[0].url}" type="${
       entities.media[0].video_info.variants[0].content_type
     }">
   Your browser does not support the video tag.
-  </video>`;
+  </video> </div>`;
   }
 
   return divMedia;

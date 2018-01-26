@@ -18,10 +18,17 @@
 
 <body>
     <div class="container">
-        <button onclick="GetTweets()">Get Data</button>
-        <div id="Accuracy">Accuracy Score: null</div>
-        <div>Shortcut keys: s for Spam and h for Ham</div>
-
+        <div class="row">
+            <div class="top col s12">
+                <div class="col s6">
+                    <a class="waves-effect waves-light btn" onclick="GetTweets()">Get Data</a>
+                </div>
+                <div class="col s6" id="Accuracy">Accuracy Score: null</div>
+                <div class="col s12 center-align">
+                    <h5>Shortcut keys: s for Spam and h for Ham</h5>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col s12">
                 <ul class="tabs">
