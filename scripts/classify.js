@@ -127,3 +127,5 @@ module.exports.classify = classify;
 module.exports.markHam = markHam;
 module.exports.markSpam = markSpam;
 module.exports.GetAccuracy = GetAccuracy;
+module.exports.ClassSpam = ClassSpam;
+module.exports.ClassHam = ClassHam;

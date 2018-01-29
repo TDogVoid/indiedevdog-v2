@@ -4,6 +4,7 @@
 // The idea of this is inspired from https://github.com/Sentdex/reddit_spam_detector_bot
 
 const twitterAPI = require('./twitterAPI.js');
+const classify = require('./classify.js');
 
 const spamWords = [
   'udemy',
@@ -43,20 +44,47 @@ function precisionRound(number, precision) {
   return Math.round(number * factor) / factor;
 }
 
-function GetScore(screenName, callback) {
+function getSpamWordScore(tweets) {
   let spamCount = 0;
-  twitterAPI.GetUserTweets(screenName, (err, tweets) => {
+  for (let i = 0; i < tweets.length; i += 1) {
+    const text = tweets[i].full_text;
+    if (IsSpamWordInText(text)) {
+      spamCount += 1;
+    }
+  }
+  const score = precisionRound(spamCount / tweets.length, 2);
+  return score;
+}
+
+function getClassifierScore(tweets) {
+  let spamCount = 0;
+  tweets.forEach((tweet) => {
+    const type = classify.classify(tweet.full_text);
+    if (type === classify.ClassSpam) {
+      spamCount += 1;
+    }
+  });
+  const score = precisionRound(spamCount / tweets.length, 2);
+  return score;
+}
+
+function GetScore(screenName, callback) {
+  // Gets the higher of the score of spam words and classifier to hopefully get an idea if that account spams alot.
+  twitterAPI.GetUserTweets(screenName, async (err, tweets) => {
     if (err) {
       callback(err, null);
       return;
     }
-    for (let i = 0; i < tweets.length; i += 1) {
-      const text = tweets[i].full_text;
-      if (IsSpamWordInText(text)) {
-        spamCount += 1;
-      }
-    }
-    const score = precisionRound(spamCount / tweets.length, 2);
+
+    const score1 = getSpamWordScore(tweets);
+    const score2 = getClassifierScore(tweets);
+    const [spamWordScore, classifierScore] = await Promise.all([
+      score1,
+      score2,
+    ]);
+
+    const score = Math.max(spamWordScore, classifierScore);
+
     callback(err, score);
   });
 }
