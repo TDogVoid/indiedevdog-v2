@@ -10,6 +10,8 @@
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="node_modules/materialize-css/dist/css/materialize.min.css">
 
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <!-- Compiled and minified JavaScript -->
     <script src="node_modules/materialize-css/dist/js/materialize.min.js"></script>
     <link rel="stylesheet" href="main.css" />
@@ -32,11 +34,16 @@
         <div class="row">
             <div class="col s12">
                 <ul class="tabs">
-                    <li class="tab col s6">
+                    <li class="tab col s5">
                         <a class="active" href="#Training-Mode">Training Mode</a>
                     </li>
-                    <li class="tab col s6   ">
+                    <li class="tab col s5   ">
                         <a href="#Display-Mode">Display Mode</a>
+                    </li>
+                    <li class="tab col s2   ">
+                        <a href="#Configure">
+                            <i class="small material-icons">tune</i>
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -45,6 +52,40 @@
             </div>
             <div id="Display-Mode" class="col s12">
                 <div id="tweets"></div>
+            </div>
+            <div id="Configure" class="col s12">
+                <div class="Configure">
+                    <div class="row">
+                        <form class="col s12" id="twitterConfig">
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="consumer_key" type="password" class="validate">
+                                    <label for="consumer_key">Consumer Key</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="consumer_secret" type="password" class="validate">
+                                    <label for="consumer_secret">Consumer Secret</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="access_token" type="password" class="validate">
+                                    <label for="access_token">Access Token</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="access_token_secret" type="password" class="validate">
+                                    <label for="access_token_secret">Access Token Secret</label>
+                                </div>
+                            </div>
+                            <a class="waves-effect waves-light btn" onclick="SaveConfig()">Save</a>
+                        </form>
+                    </div>
+
+                </div>
             </div>
         </div>
 

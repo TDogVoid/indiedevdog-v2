@@ -237,6 +237,41 @@ function GetTweets() {
   });
 }
 
+function ConfigValidation() {
+  const consumer_key = document.getElementById('consumer_key').value;
+  const consumer_secret = document.getElementById('consumer_secret').value;
+  const access_token = document.getElementById('access_token').value;
+  const access_token_secret = document.getElementById('access_token_secret')
+    .value;
+  if (
+    consumer_key === '' ||
+    consumer_secret === '' ||
+    access_token === '' ||
+    access_token_secret === ''
+  ) {
+    alert('missing a config');
+    return false;
+  }
+  return true;
+}
+
+function SaveConfig() {
+  if (ConfigValidation()) {
+    const consumer_key = document.getElementById('consumer_key').value;
+    const consumer_secret = document.getElementById('consumer_secret').value;
+    const access_token = document.getElementById('access_token').value;
+    const access_token_secret = document.getElementById('access_token_secret')
+      .value;
+
+    UserData.setTwitterKeys(
+      consumer_key,
+      consumer_secret,
+      access_token,
+      access_token_secret
+    );
+  }
+}
+
 $(document).ready(() => {
   UserData.load(() => {
     load();

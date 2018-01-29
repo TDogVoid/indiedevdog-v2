@@ -16,6 +16,11 @@ body {
   font-size: 14px;
 }
 
+.Configure {
+  background: white;
+  padding: 10px;
+}
+
 .tweet {
   background: white;
   border: grey solid 10px;
@@ -45,12 +50,12 @@ img {
   text-align: center;
   width: 50%;
 }
-.AddTwitterAccountSpam input[type="text"] {
+.AddTwitterAccountSpam input[type='text'] {
   background-color: #d12e2e;
   color: white;
 }
 
-.AddTwitterAccountHam input[type="text"] {
+.AddTwitterAccountHam input[type='text'] {
   background-color: #0d4e00;
   color: white;
 }

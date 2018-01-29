@@ -4,6 +4,12 @@ const file = 'userData.json';
 
 let UserData = {
   LastID: 0,
+  TwitterConfig: {
+    consumer_key: '',
+    consumer_secret: '',
+    access_token: '',
+    access_token_secret: '',
+  },
 };
 
 function load(callback) {
@@ -31,6 +37,26 @@ function setLastID(id) {
   }
 }
 
+function GetTwitterConfig() {
+  return UserData.TwitterConfig;
+}
+
+function setTwitterKeys(
+  consumer_key,
+  consumer_secret,
+  access_token,
+  access_token_secret
+) {
+  UserData.TwitterConfig = {
+    consumer_key,
+    consumer_secret,
+    access_token,
+    access_token_secret,
+  };
+  console.log(UserData);
+  save();
+}
+
 function getLastID() {
   return UserData.LastID;
 }
@@ -39,3 +65,5 @@ module.exports.save = save;
 module.exports.load = load;
 module.exports.setLastID = setLastID;
 module.exports.getLastID = getLastID;
+module.exports.setTwitterKeys = setTwitterKeys;
+module.exports.GetTwitterConfig = GetTwitterConfig;

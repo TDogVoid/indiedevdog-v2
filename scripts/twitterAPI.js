@@ -1,10 +1,12 @@
-const T = require('../twitterConfig.js');
+const Twit = require('twit');
+const UserData = require('./userData');
 
 const searchQuery = '@indiedev OR #gamedev -RT';
 
 function SearchTwitter(lastID, callback) {
   const Tweets = [];
-  T.TwitClient.get(
+  const TwitClient = new Twit(UserData.GetTwitterConfig());
+  TwitClient.get(
     'search/tweets',
     {
       q: searchQuery,
@@ -32,7 +34,8 @@ function SearchTwitter(lastID, callback) {
 
 function GetUserTweets(screenName, callback) {
   const Tweets = [];
-  T.TwitClient.get(
+  const TwitClient = new Twit(UserData.GetTwitterConfig());
+  TwitClient.get(
     'statuses/user_timeline',
     {
       screen_name: screenName,
