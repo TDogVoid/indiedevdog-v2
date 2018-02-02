@@ -1,75 +1,29 @@
 /* global $ document */
 /* eslint no-undef: "error" */
 
-const twitterAPI = require('./scripts/twitterAPI'); // eslint-disable-line import/no-unresolved
-const classify = require('./scripts/classify.js'); // eslint-disable-line import/no-unresolved
-const spamScore = require('./scripts/spamScore.js'); // eslint-disable-line import/no-unresolved
-const TweetsFile = require('./scripts/tweets.js'); // eslint-disable-line import/no-unresolved
-const UserData = require('./scripts/userData.js'); // eslint-disable-line import/no-unresolved
+const electron = require('electron');
+
+const { ipcRenderer } = electron;
 
 let TweetsData = [];
 
-function removeFromArray(arr, item) {
-  const i = arr.indexOf(item);
-  if (i !== -1) {
-    arr.splice(i, 1);
-  }
-}
-
-function getLastID() {
-  // TODO: need to save lastid to a pref file so when tweets is empty it still gets only new ones
-  let last = UserData.getLastID();
-  if (TweetsData.length > 0) {
-    for (let i = 0; i < TweetsData.length; i += 1) {
-      if (TweetsData[i].id > last) {
-        last = TweetsData[i].id;
-      }
-    }
-    UserData.setLastID(last);
-    return last;
-  }
-  return null;
-}
-
-function precisionRound(number, precision) {
-  const factor = 10 ** precision;
-  return Math.round(number * factor) / factor;
-}
-
 // eslint-disable-next-line no-unused-vars
-function GetAccuracy() {
-  classify.GetAccuracy((err, score) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    const precScore = precisionRound(score, 2) * 100;
-    document.getElementById(
-      'Accuracy'
-    ).innerHTML = `<div class="col s5 teal lighten-2">Accuracy Score: ${precScore}%</div>`;
-  });
+function RenderAccuracy(score) {
+  document.getElementById(
+    'Accuracy'
+  ).innerHTML = `<div class="col s5 teal lighten-2">Accuracy Score: ${score}%</div>`;
 }
 
-function saveTweets(Tweets) {
-  for (let i = 0; i < Tweets.length; i += 1) {
-    TweetsData.push(Tweets[i]);
-  }
-
-  TweetsFile.save(TweetsData);
-}
+ipcRenderer.on('Classifier:Accuracy', (event, score) => {
+  RenderAccuracy(score);
+});
 
 function MarkSpam(tweet) {
-  removeFromArray(TweetsData, tweet);
-  classify.markSpam(tweet.full_text);
-  reclassify(); // eslint-disable-line no-use-before-define
-  TweetsFile.save(TweetsData);
+  ipcRenderer.send('Tweet:MarkSpam', tweet);
 }
 
 function MarkHam(tweet) {
-  removeFromArray(TweetsData, tweet);
-  classify.markHam(tweet.full_text);
-  reclassify(); // eslint-disable-line no-use-before-define
-  TweetsFile.save(TweetsData);
+  ipcRenderer.send('Tweet:MarkHam', tweet);
 }
 
 function createProfileDiv(tweet) {
@@ -87,7 +41,7 @@ function createProfileDiv(tweet) {
   return divProfileImage;
 }
 
-function createDivButtons(tweet, divSpamScore) {
+function createDivButtons(tweet) {
   const divButtons = document.createElement('div');
   divButtons.className = 'buttons';
 
@@ -113,15 +67,7 @@ function createDivButtons(tweet, divSpamScore) {
   });
 
   ScoreButton.addEventListener('click', () => {
-    spamScore.GetScore(tweet.user.screen_name, (err, Score) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      tweet.user.spamScore = Score; // eslint-disable-line no-param-reassign
-      renderSpamScore(divSpamScore, tweet); // eslint-disable-line no-use-before-define
-      TweetsFile.save(TweetsData);
-    });
+    ipcRenderer.send('User:GetSpamScore', tweet);
   });
 
   return divButtons;
@@ -178,7 +124,7 @@ function renderTweet(tweet, DivID) {
   const divSpamScore = document.createElement('div');
 
   // classNames
-  div.className = `tweet ${classify.classify(text)}`;
+  div.className = `tweet ${tweet.ClassifiedType}`;
 
   // append
   div.appendChild(createProfileDiv(tweet));
@@ -194,7 +140,7 @@ function renderTweet(tweet, DivID) {
 }
 
 function renderTweets() {
-  GetAccuracy();
+  document.getElementById('tweets').innerHTML = '';
   for (let i = 0; i < TweetsData.length; i += 1) {
     renderTweet(TweetsData[i], 'tweets');
   }
@@ -205,36 +151,9 @@ function renderTrainingMode() {
   renderTweet(TweetsData[0], 'Training');
 }
 
-function reclassify() {
-  document.getElementById('tweets').innerHTML = '';
-  renderTweets();
-  renderTrainingMode();
-}
-
-function load() {
-  classify.load(() => {
-    TweetsFile.load((err, data) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      TweetsData = data;
-      renderTweets();
-      renderTrainingMode();
-    });
-  });
-}
-
 // eslint-disable-next-line no-unused-vars
 function GetTweets() {
-  twitterAPI.SearchTwitter(getLastID(), (Tweets) => {
-    saveTweets(Tweets);
-    renderTweets();
-    renderTrainingMode();
-
-    // set new LastID
-    getLastID();
-  });
+  ipcRenderer.send('Tweets:Get');
 }
 
 function ConfigValidation() {
@@ -262,21 +181,15 @@ function SaveConfig() {
     const access_token = document.getElementById('access_token').value;
     const access_token_secret = document.getElementById('access_token_secret')
       .value;
-
-    UserData.setTwitterKeys(
+    const Keys = {
       consumer_key,
       consumer_secret,
       access_token,
-      access_token_secret
-    );
+      access_token_secret,
+    };
+    ipcRenderer.send('Config:TwitterKeys', Keys);
   }
 }
-
-$(document).ready(() => {
-  UserData.load(() => {
-    load();
-  });
-});
 
 document.addEventListener('keydown', (event) => {
   if (event.keyCode === 72) {
@@ -284,4 +197,14 @@ document.addEventListener('keydown', (event) => {
   } else if (event.keyCode === 83) {
     MarkSpam(TweetsData[0]);
   }
+});
+
+ipcRenderer.on('Tweets:Data', (event, Data) => {
+  TweetsData = Data;
+  renderTrainingMode();
+  renderTweets();
+});
+
+$(document).ready(() => {
+  ipcRenderer.send('Tweets:GetData');
 });

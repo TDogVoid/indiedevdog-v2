@@ -2,6 +2,8 @@ const jsonfile = require('jsonfile');
 
 const file = 'userData.json';
 
+let isLoaded = false;
+
 let UserData = {
   LastID: 0,
   TwitterConfig: {
@@ -14,19 +16,21 @@ let UserData = {
 
 function load(callback) {
   jsonfile.readFile(file, (err, data) => {
+    isLoaded = true;
     if (err) {
       console.log(err);
       callback(err, null);
       return;
     }
     UserData = data;
-
     callback(err, UserData);
   });
 }
 
 function save() {
-  jsonfile.writeFile(file, UserData);
+  if (isLoaded) {
+    jsonfile.writeFile(file, UserData);
+  }
 }
 
 function setLastID(id) {
@@ -41,19 +45,8 @@ function GetTwitterConfig() {
   return UserData.TwitterConfig;
 }
 
-function setTwitterKeys(
-  consumer_key,
-  consumer_secret,
-  access_token,
-  access_token_secret
-) {
-  UserData.TwitterConfig = {
-    consumer_key,
-    consumer_secret,
-    access_token,
-    access_token_secret,
-  };
-  console.log(UserData);
+function setTwitterKeys(Keys) {
+  UserData.TwitterConfig = Keys;
   save();
 }
 

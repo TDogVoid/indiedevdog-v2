@@ -1,11 +1,15 @@
 const Twit = require('twit');
 const UserData = require('./userData');
 
+let TwitClient;
+UserData.load(() => {
+  TwitClient = new Twit(UserData.GetTwitterConfig());
+});
+
 const searchQuery = '@indiedev OR #gamedev -RT';
 
 function SearchTwitter(lastID, callback) {
   const Tweets = [];
-  const TwitClient = new Twit(UserData.GetTwitterConfig());
   TwitClient.get(
     'search/tweets',
     {
@@ -34,7 +38,6 @@ function SearchTwitter(lastID, callback) {
 
 function GetUserTweets(screenName, callback) {
   const Tweets = [];
-  const TwitClient = new Twit(UserData.GetTwitterConfig());
   TwitClient.get(
     'statuses/user_timeline',
     {
