@@ -6,7 +6,7 @@ UserData.load(() => {
   TwitClient = new Twit(UserData.GetTwitterConfig());
 });
 
-const searchQuery = '@indiedev OR #gamedev -RT';
+const searchQuery = '@indiedev OR #gamedev -RT -#mPLUSRewards -Hack';
 
 function GetBlockedIDs(callback) {
   TwitClient.get(
