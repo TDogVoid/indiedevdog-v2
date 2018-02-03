@@ -5,6 +5,7 @@ const readline = require('readline');
 const fs = require('fs');
 
 let classifier;
+let isLoaded = false;
 
 const ClassSpam = 'Spam';
 const ClassHam = 'Ham';
@@ -18,12 +19,14 @@ function train(str, type) {
 }
 
 function SaveClassifierFile() {
-  classifier.save('./classifier.json', (err, c) => {
-    // the classifier is saved to the classifier.json file!
-    if (err) {
-      console.log(err);
-    }
-  });
+  if (isLoaded) {
+    classifier.save('./classifier.json', (err, c) => {
+      // the classifier is saved to the classifier.json file!
+      if (err) {
+        console.log(err);
+      }
+    });
+  }
 }
 
 function save() {
@@ -109,6 +112,7 @@ function initialTraining() {
 
 function load(callback) {
   natural.BayesClassifier.load('classifier.json', null, (err, c) => {
+    isLoaded = true;
     if (err && err.code === 'ENOENT') {
       classifier = new natural.BayesClassifier();
       initialTraining();
