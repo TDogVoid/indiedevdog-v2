@@ -72,7 +72,7 @@ function GetUserTweets(screenName, callback) {
   );
 }
 
-function PostRetweet(id_str) {
+function PostRetweet(id_str, callback) {
   console.log('posting: ' + id_str);
   TwitClient.post(
     'statuses/retweet/:id',
@@ -83,6 +83,7 @@ function PostRetweet(id_str) {
       if (err) {
         console.log(err);
       }
+      callback();
     }
   );
 }

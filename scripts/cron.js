@@ -89,7 +89,9 @@ async function Retweet() {
     if (reply) {
       Retweet();
     } else {
-      twitterAPI.PostRetweet(randomTweet.id_str);
+      twitterAPI.PostRetweet(randomTweet.id_str, () => {
+        process.exit();
+      });
     }
   });
 }
