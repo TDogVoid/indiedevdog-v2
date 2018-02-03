@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/TDog/indiedevdogtrainer.git"
+    "url": "git@github.com:TDogVoid/indiedevdog-v2.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/TDog/indiedevdogtrainer/issues"
+    "url": "https://github.com/TDogVoid/indiedevdog-v2/issues"
   },
-  "homepage": "https://gitlab.com/TDog/indiedevdogtrainer#README",
+  "homepage": "https://github.com/TDogVoid/indiedevdog-v2",
   "dependencies": {
     "electron": "^1.7.10",
     "jquery": "^3.3.1",
