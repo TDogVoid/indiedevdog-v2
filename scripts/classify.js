@@ -111,6 +111,7 @@ function initialTraining() {
 }
 
 function load(callback) {
+  console.log("loading classifier");
   natural.BayesClassifier.load('classifier.json', null, (err, c) => {
     isLoaded = true;
     if (err && err.code === 'ENOENT') {

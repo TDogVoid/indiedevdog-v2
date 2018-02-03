@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
-    "install": "./node_modules/.bin/electron-rebuild"
+    "install": "./node_modules/.bin/electron-rebuild",
+    "cron": "electron ./scripts/cron.js"
   },
   "repository": {
     "type": "git",

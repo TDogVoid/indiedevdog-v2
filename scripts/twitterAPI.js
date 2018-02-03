@@ -8,6 +8,17 @@ UserData.load(() => {
 
 const searchQuery = '@indiedev OR #gamedev -RT';
 
+function GetBlockedIDs(callback) {
+  TwitClient.get(
+    'blocks/list',
+    {
+      include_entities: true,
+      skip_status: true,
+    },
+    callback
+  );
+}
+
 function SearchTwitter(lastID, callback) {
   const Tweets = [];
   TwitClient.get(
@@ -61,5 +72,22 @@ function GetUserTweets(screenName, callback) {
   );
 }
 
+function PostRetweet(id_str) {
+  console.log('posting: ' + id_str);
+  TwitClient.post(
+    'statuses/retweet/:id',
+    {
+      id: id_str,
+    },
+    (err, data, response) => {
+      if (err) {
+        console.log(err);
+      }
+    }
+  );
+}
+
 module.exports.SearchTwitter = SearchTwitter;
 module.exports.GetUserTweets = GetUserTweets;
+module.exports.GetBlockedIDs = GetBlockedIDs;
+module.exports.PostRetweet = PostRetweet;
