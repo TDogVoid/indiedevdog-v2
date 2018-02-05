@@ -151,6 +151,7 @@ ipcMain.on('User:GetSpamScore', (event, tweet) => {
 });
 
 function load() {
+  UserData.load(()=>{});
   classify.load(() => {
     TweetsFile.load((err, data) => {
       if (err) {

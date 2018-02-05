@@ -1,14 +1,10 @@
 const Twit = require('twit');
 const UserData = require('./userData');
 
-let TwitClient;
-UserData.load(() => {
-  TwitClient = new Twit(UserData.GetTwitterConfig());
-});
-
 const searchQuery = '@indiedev OR #gamedev -RT -#mPLUSRewards -Hack';
 
-function GetBlockedIDs(callback) {
+async function GetBlockedIDs(callback) {
+  let TwitClient = await new Twit(UserData.GetTwitterConfig());
   TwitClient.get(
     'blocks/list',
     {
@@ -19,8 +15,9 @@ function GetBlockedIDs(callback) {
   );
 }
 
-function SearchTwitter(lastID, callback) {
+async function SearchTwitter(lastID, callback) {
   const Tweets = [];
+  let TwitClient = await new Twit(UserData.GetTwitterConfig());
   TwitClient.get(
     'search/tweets',
     {
@@ -47,8 +44,9 @@ function SearchTwitter(lastID, callback) {
   );
 }
 
-function GetUserTweets(screenName, callback) {
+async function GetUserTweets(screenName, callback) {
   const Tweets = [];
+  let TwitClient = await new Twit(UserData.GetTwitterConfig());
   TwitClient.get(
     'statuses/user_timeline',
     {
@@ -72,8 +70,9 @@ function GetUserTweets(screenName, callback) {
   );
 }
 
-function PostRetweet(id_str, callback) {
+async function PostRetweet(id_str, callback) {
   console.log('posting: ' + id_str);
+  let TwitClient = await new Twit(UserData.GetTwitterConfig());
   TwitClient.post(
     'statuses/retweet/:id',
     {

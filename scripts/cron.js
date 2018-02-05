@@ -97,10 +97,12 @@ async function Retweet() {
 }
 
 function mainLoop() {
-  classify.load(() => {
-    GetTweets(() => {
-      GetBlockedIDs(() => {
-        Retweet();
+  UserData.load(() => {
+    classify.load(() => {
+      GetTweets(() => {
+        GetBlockedIDs(() => {
+          Retweet();
+        });
       });
     });
   });
